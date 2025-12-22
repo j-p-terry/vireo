@@ -1,5 +1,7 @@
 # VIREO: Visibilities-Informed Reconstruction for Enhanced Observations
 
+[![DOI](https://zenodo.org/badge/1035594507.svg)](https://doi.org/10.5281/zenodo.18019327)
+
 <p align="center">
   <img src="./data/vireo_logo.png" alt="VIREO logo" width="300"/>
 </p>
