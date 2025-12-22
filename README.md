@@ -1,7 +1,7 @@
 # VIREO: Visibilities-Informed Reconstruction for Enhanced Observations
 
 <p align="center">
-  <img src="./data/vireo_logo.png" alt="VIREO logo" width="300"/>
+  <img src="./vireo_logo.png" alt="VIREO logo" width="300"/>
 </p>
 
 ---
