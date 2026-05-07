@@ -16,8 +16,8 @@ UJy_TO_W = 1e-32  # µJy → W m^-2 Hz^-1
 ### from Ilee et al. (2020)
 SKA_PRESETS = {
     # resolution, hours : (rms_uJy, peak_snr, vis_noise_mJy, radial_exp, uv_points, gamma)
-    ("34mas", 10):  dict(rms=0.83, peak_snr=4.16,  vis=0.56, radial_exp=1.6, uv_points=200_000, gamma=0.70),
-    ("34mas", 100):  dict(rms=0.26, peak_snr=4.90,  vis=0.56, radial_exp=1.6, uv_points=200_000, gamma=0.70),
+    ("34mas", 10):  dict(rms=0.83, peak_snr=4.90,  vis=0.56, radial_exp=1.6, uv_points=200_000, gamma=0.70),
+    ("34mas", 100):  dict(rms=0.26, peak_snr=7.73,  vis=0.56, radial_exp=1.6, uv_points=200_000, gamma=0.70),
     ("34mas", 1000): dict(rms=0.08, peak_snr=16.80, vis=0.56, radial_exp=1.5, uv_points=800_000, gamma=0.75),
     ("67mas", 10):  dict(rms=0.44, peak_snr=7.58, vis=0.28, radial_exp=1.2, uv_points=160_000, gamma=0.90),
     ("67mas", 100):  dict(rms=0.14, peak_snr=17.17, vis=0.28, radial_exp=1.2, uv_points=160_000, gamma=0.90),
