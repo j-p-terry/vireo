@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Defensible CASA multiscale CLEAN baseline for SKA-Mid-like synthetic images,
+Script for CASA multiscale CLEAN baseline for SKA-Mid-like synthetic images,
 with optional auto second-pass based on residual peak vs sigma inside the mask.
 
 Logging:
@@ -40,11 +40,11 @@ auto_second_pass      = True      # auto rule: run pass-2 only if residual_peak/
 auto_second_threshold = 3.5       # default T in rule above
 second_pass_gain      = 0.03
 second_pass_snr_boost = 1.2       # rebuild mask with slightly stricter SNR cut
-verbose      = False
+verbose               = False
 
-# IO
-data_dir = "../data/ska_cont_sg_dirty/"
-save_dir = "../data/all_casa_sg_clean/"
+# IO (defaults; modify accordingly)
+data_dir = "../data/ska_cont_dirty/"
+save_dir = "../data/all_casa_clean/"
 os.makedirs(save_dir, exist_ok=True)
 
 # -----------------------------
