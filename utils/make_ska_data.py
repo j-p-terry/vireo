@@ -902,7 +902,7 @@ if __name__ == "__main__":
             hdr["BRMS_W"] = (meta["rms_W_per_beam"], "RMS per beam (CUNIT1)")
             hdr["t_EXP"] = (t_hr, "total exposure time (hours)")
             hdr["dt"] = (dt_s, "single exposure time (seconds)")
-            hdr["H_MIN"] = (h_min_deg, "minimum hour angle (degrees)")
+            hdr["H_MIN"] = (h_min_deg, "minimum elevation cut (degrees)")
             hdr["DEC"] = (dec_deg, "declination (degrees)")
             hdr["UV_CNTS"] = np.sum(uv_counts)
             hdr["TOT_HITS"] = meta["total_hits"]
