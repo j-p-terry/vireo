@@ -6,7 +6,8 @@ import os
 import yaml
 
 """ 
-Uses SKA-mid array locations to approximate UV plane hits and create synthetic observations/PSF with enforced noise parameters
+Uses SKA-mid array locations to approximate UV plane hits and 
+create synthetic observations/PSF with enforced noise parameters
 taken from Ilee et al. (2020)
 """
 
