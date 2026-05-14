@@ -5,13 +5,18 @@ from astropy.io import fits
 import os
 import yaml
 
+""" 
+Uses SKA-mid array locations to approximate UV plane hits and create synthetic observations/PSF with enforced noise parameters
+taken from Ilee et al. (2020)
+"""
+
 # ---------------------------
-# Small helpers (unit-safe)
+# Small helper variables
 # ---------------------------
-SKA_MID_LAT_DEG = -30.712925  # from your COFA
+SKA_MID_LAT_DEG = -30.712925
 JY_TO_W = 1e-26
 mJy_TO_W = 1e-29
-UJy_TO_W = 1e-32  # µJy → W m^-2 Hz^-1
+UJy_TO_W = 1e-32  # uJy -> W m^-2 Hz^-1
 
 ### from Ilee et al. (2020)
 SKA_PRESETS = {
@@ -24,10 +29,10 @@ SKA_PRESETS = {
     ("67mas", 1000): dict(rms=0.05, peak_snr=44.75, vis=0.28, radial_exp=1.25, uv_points=600_000, gamma=0.90),
 }
 
-def ujy_to_W(rms_uJy):  # µJy/beam → W m^-2 Hz^-1 / beam
+def ujy_to_W(rms_uJy):  # uJy/beam -> W m^-2 Hz^-1 / beam
     return float(rms_uJy) * 1e-32
 
-def mas_to_rad(mas):    # mas → radians
+def mas_to_rad(mas):    # mas -> radians
     return np.deg2rad(float(mas) / 3_600_000.0)
 
 def sanitize_finite(a):
@@ -62,7 +67,7 @@ def needed_baseline_scale(ant_ENU_m, freq_GHz, target_fwhm_mas):
     diffs = ant_ENU_m[:,None,:] - ant_ENU_m[None,:,:]
     B = np.sqrt((diffs[...,0]**2 + diffs[...,1]**2 + diffs[...,2]**2)).max()
     # target baseline for desired FWHM
-    theta = np.deg2rad(target_fwhm_mas/3_600_000.0)   # mas → rad
+    theta = np.deg2rad(target_fwhm_mas/3_600_000.0)   # mas -> rad
     B_needed = lam / theta
     return float(B_needed / max(B, 1e-9)), float(B/1e3), float(B_needed/1e3)  # (scale, Bcur[km], Bneed[km])
 
@@ -200,7 +205,7 @@ def scale_noise_to_map_rms(noise_raw, rms_uJy_target):
 def force_unit_rms(noise_raw):
     """
     Normalize an arbitrary residual field to unit RMS using a robust estimator.
-    Returns noise_unit (RMS≈1) and the measured raw RMS.
+    Returns noise_unit (RMS~=1) and the measured raw RMS.
     """
     raw = corner_rms(noise_raw)
     if not np.isfinite(raw) or raw == 0:
@@ -226,12 +231,12 @@ def scale_noise_and_model(noise_raw, model0, rms_uJy_target, peak_snr):
     peak_W  = float(peak_snr) * sigma_W
     model   = (model0 * (peak_W / m0max)).astype(np.float64)
 
-    # 4) self-check (prints once; comment out after you see it’s correct)
+    # 4) self-check
     meas_W   = corner_rms(noise)
     meas_uJy = meas_W * 1e32
     snr_meas = (model + noise).max() / (corner_rms(noise) or 1.0)
-    print(f"[scale] target σ={rms_uJy_target:.6g} µJy → {sigma_W:.3e} W | "
-          f"rawRMS={raw:.3e} | meas σ={meas_uJy:.6g} µJy | SNR target={peak_snr}, meas≈{snr_meas:.2f}")
+    print(f"[scale] target sigma={rms_uJy_target:.6g} uJy → {sigma_W:.3e} W | "
+          f"rawRMS={raw:.3e} | meas sigma={meas_uJy:.6g} uJy | SNR target={peak_snr}, meas~={snr_meas:.2f}")
 
     # sanity: within 2%
     if not (np.isfinite(meas_W) and abs(meas_W - sigma_W) <= 0.02 * sigma_W):
@@ -245,11 +250,11 @@ def pre_noise_clip_model(model0_W, sigma_beam_W, method="asinh",
     model0_W: beam-convolved clean (W m^-2 Hz^-1 / beam)
     sigma_beam_W: target map RMS in W m^-2 Hz^-1 / beam
     method: "hard", "asinh", or "power"
-      hard : clamp at ±k σ  (linear in-range, hard edges)
-      asinh: smooth compression; linear for |S|≲s, gentle roll-off to ~log
-      power: signed power-law |S|^γ (γ<1 compresses highs), linear at zero
-    k:     saturation level in σ units (for hard/asinh)
-    s:     bend scale in σ units (for asinh)
+      hard : clamp at +/-k σ  (linear in-range, hard edges)
+      asinh: smooth compression; linear for |S|~<=s, gentle roll-off to ~log
+      power: signed power-law |S|^gamma (gamma<1 compresses highs), linear at zero
+    k:     saturation level in sigma units (for hard/asinh)
+    s:     bend scale in sigma units (for asinh)
     gamma: power exponent in (0,1] (for power)
     """
     S = model0_W / (sigma_beam_W + 1e-30)   # SNR map
@@ -261,10 +266,10 @@ def pre_noise_clip_model(model0_W, sigma_beam_W, method="asinh",
         # linear for small S, gentle compression for large S
         denom = np.arcsinh(k / s)
         S2 = np.arcsinh(S / s) / denom
-        S2 *= k   # so that |S2| ≤ k and small S2≈S
+        S2 *= k   # so that |S2| <= k and small S2~=S
 
     elif method == "power":
-        # signed power-law compression; choose γ in [0.4, 0.8]
+        # signed power-law compression
         S2 = np.sign(S) * (np.abs(S) ** gamma)
 
     else:
@@ -499,9 +504,9 @@ def simulate_from_array(
     lat_deg=SKA_MID_LAT_DEG,    # site latitude
     dt_s=10.0,                  # dump time (s)
     el_min_deg=20.0,            # min elevation cut
-    rms_uJy_per_beam=None,      # target map RMS (µJy/beam) — REQUIRED for noise scaling
+    rms_uJy_per_beam=None,      # target map RMS (uJy/beam) — REQUIRED for noise scaling
     peak_snr=None,              # target peak SNR — REQUIRED for absolute scaling
-    gamma=0.8,                  # uv weight flattening (natural→uniform)
+    gamma=0.8,                  # uv weight flattening (natural->uniform)
     blur_sigma_px=1.25,         # uv gridding blur (pixels)
     restore=True,               # use Gaussian restoring beam for model
     return_sum1_psf=True,       # also return a sum=1 PSF for ML
@@ -555,7 +560,7 @@ def simulate_from_array(
     if residual_psd == "dirty":
         noise_raw = uv_noise_image(counts, gamma=gamma, seed=seed+11)
     elif residual_psd == "restoring":
-        # white noise → convolve with restoring beam (peak=1) → smoother residuals
+        # white noise -> convolve with restoring beam (peak=1) -> smoother residuals
         rng = np.random.default_rng(seed+11)
         white = rng.normal(0.0, 1.0, size=(H, W)).astype(np.float64)
         rest_peak1 = (rest_peak1 if restore and rest_peak1 is not None
@@ -570,7 +575,7 @@ def simulate_from_array(
     sigma_rms_W = rms_uJy_per_beam * 1e-32
     if preclip:
         model0 = pre_noise_clip_model(model0, sigma_rms_W, method="asinh", s=3.0, k=12.0)    
-    # --- scale residuals to RMS, then set peak from measured RMS (unchanged logic) ---
+    # --- scale residuals to RMS, then set peak from measured RMS ---
     noise = scale_noise_to_map_rms(noise_raw, rms_uJy_per_beam)
     noise_rms_meas = corner_rms(noise)
     target_peak_W  = float(peak_snr) * noise_rms_meas
