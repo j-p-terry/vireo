@@ -251,7 +251,7 @@ def pre_noise_clip_model(model0_W, sigma_beam_W, method="asinh",
     model0_W: beam-convolved clean (W m^-2 Hz^-1 / beam)
     sigma_beam_W: target map RMS in W m^-2 Hz^-1 / beam
     method: "hard", "asinh", or "power"
-      hard : clamp at +/-k σ  (linear in-range, hard edges)
+      hard : clamp at +/-k sigma  (linear in-range, hard edges)
       asinh: smooth compression; linear for |S|~<=s, gentle roll-off to ~log
       power: signed power-law |S|^gamma (gamma<1 compresses highs), linear at zero
     k:     saturation level in sigma units (for hard/asinh)

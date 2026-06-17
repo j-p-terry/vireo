@@ -126,13 +126,13 @@ def make_psf_from_header(H: int, W: int, hdr: dict, norm: str = "peak"):
 
     cell_mas = 1000.0 * arcsec_per_pix
 
-    # FWHM arcsec → pixels; then σ = FWHM / (2√(2ln2))
+    # FWHM arcsec -> pixels; then sigma = FWHM / (2sqrt(2ln2))
     fwhm_maj_pix = (bmaj_deg * 3600.0) / max(arcsec_per_pix, 1e-30)
     fwhm_min_pix = (bmin_deg * 3600.0) / max(arcsec_per_pix, 1e-30)
     sig_maj_pix  = fwhm_maj_pix / 2.354820045
     sig_min_pix  = fwhm_min_pix / 2.354820045
 
-    # grid & rotation (BPA: East of North ⇒ θ = BPA)
+    # grid & rotation (BPA: East of North -> theta = BPA)
     yy, xx = np.meshgrid(np.arange(H) - H//2, np.arange(W) - W//2, indexing="ij")
     th = np.deg2rad(bpa_deg)
     xr =  xx*np.cos(th) - yy*np.sin(th)
