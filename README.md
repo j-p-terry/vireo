@@ -1,6 +1,8 @@
 # VIREO: Visibility-Informed Reconstruction for Enhanced Observations
 
 [![DOI](https://zenodo.org/badge/1035594507.svg)](https://doi.org/10.5281/zenodo.18019327)
+[![MNRAS](https://img.shields.io/badge/MNRAS-purple)](https://academic.oup.com/mnras/advance-article/doi/10.1093/mnras/stag1819/8834037)
+[![arXiv](https://img.shields.io/badge/arXiv-2605.14971-red)](https://arxiv.org/abs/2605.14971)
 
 <p align="center">
   <img src="./data/vireo_logo.png" alt="VIREO logo" width="300"/>
@@ -10,7 +12,7 @@
 
 ## Overview  
 
-**VIREO** (Visibilities-Informed Reconstruction for Enhanced Observations) is a machine learning framework for reconstructing high-fidelity astronomical images from interferometric data.  
+**VIREO** (Visibility-Informed Reconstruction for Enhanced Observations) is a machine learning framework for reconstructing high-fidelity astronomical images from interferometric data.  
 It is designed to push beyond traditional deconvolution (e.g., CLEAN) by leveraging multiscale priors, physics-informed constraints, and deep learning to **enhance the recovery of faint substructure** (spirals, wakes, planet-induced features) in protoplanetary discs and other extended sources.  
 
 The goal: not just cleaner images, but **scientifically richer reconstructions** that improve our ability to detect and characterize faint features in noisy interferometric datasets, such as those from **ALMA** and the upcoming **SKA**.  
